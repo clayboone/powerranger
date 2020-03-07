@@ -1,0 +1,8 @@
+.vscode/*
+!.vscode/settings.json
+**/__pycache__
+**/.pytest_cache
+build
+dist
+powerranger.egg-info
+.mypy_cache

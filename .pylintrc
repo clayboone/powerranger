@@ -1,0 +1,11 @@
+[MASTER]
+init-hook='import sys; sys.path.append("powerranger")'
+enable=all
+disable=
+    missing-module-docstring,
+    maybe-no-member,
+    locally-disabled,
+    suppressed-message,
+    too-few-public-methods,
+
+max-line-length=119

@@ -1,7 +1,7 @@
 import curses
 import itertools
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 from colors import Colors
 import config
@@ -11,6 +11,7 @@ class Item:
     """An item inside of a Directory."""
     def __init__(self, path: Union[Path, str]):
         self._path = Path(path)
+        self._selected = False
 
     @property
     def name(self) -> str:
@@ -22,10 +23,22 @@ class Item:
         """An initialized ncurses color pair associated with the type of file
         for this Item.
         """
+        if self.selected:
+            return Colors.black_on_white()
+
         if self._path.is_dir():
-            return Colors.blue_on_black() | curses.A_BOLD
+            return Colors.blue_on_black()
 
         return Colors.default()
+
+    @property
+    def selected(self) -> Optional[bool]:
+        """Return whether this item should appear as selected"""
+        return self._selected
+
+    @selected.setter
+    def selected(self, value: bool):
+        self._selected = value
 
 
 class Directory:

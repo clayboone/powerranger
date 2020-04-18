@@ -29,11 +29,12 @@ class View(metaclass=Singleton):
         # completion.
         self.stdscr: curses.newwin = stdscr
         self.active_dir = Path(config.DEFAULT_STARTUP_DIR).resolve()
+        self._active_item_index = 0
+        self._max_cursor_index = None
 
     def render(self):
         """Render the main window view."""
         panes = []
-        self.stdscr.clear()
 
         header_offset = self._draw_header()
         border_offset = int(config.View.draw_boxes)
@@ -49,6 +50,8 @@ class View(metaclass=Singleton):
             if index >= height - (2 * border_offset):
                 break
 
+            item.selected = item.name == self.active_dir.name
+
             panes[0].addnstr(index + border_offset, border_offset, item.name, parent_width, item.color)
 
         active_width = int(curses.COLS * config.View.active_pane_width_percent)
@@ -58,6 +61,9 @@ class View(metaclass=Singleton):
         for index, item in enumerate(Directory(self.active_dir)):
             if index >= height - (2 * border_offset):
                 break
+
+            item.selected = index == self.active_item_index
+            self._max_cursor_index = index
 
             panes[1].addnstr(index + border_offset, border_offset, item.name, active_width, item.color)
 
@@ -86,4 +92,20 @@ class View(metaclass=Singleton):
         """Handler for a KEY_RESIZE event."""
         curses.resize_term(*self.stdscr.getmaxyx())
         curses.curs_set(Cursor.HIDDEN)
+        self.render()
+
+    @property
+    def active_item_index(self) -> int:
+        """Index of the selected item in panes[1]."""
+        return self._active_item_index
+
+    @active_item_index.setter
+    def active_item_index(self, value: int):
+        if value < 0:
+            self._active_item_index = 0
+        elif value >= self._max_cursor_index:
+            self._active_item_index = self._max_cursor_index
+        else:
+            self._active_item_index = value
+
         self.render()

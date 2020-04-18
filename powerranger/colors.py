@@ -1,4 +1,5 @@
 import curses
+import inspect
 from typing import Dict
 
 
@@ -8,18 +9,33 @@ class Colors:
 
     @classmethod
     def blue_on_black(cls) -> curses.color_pair:
-        """Initialized blue-on-black color pair."""
-        return cls._setup_pair("blue_black", curses.COLOR_BLUE, curses.COLOR_BLACK)
+        """Initialized color pair."""
+        func = inspect.getframeinfo(inspect.currentframe()).function
+        return cls._setup_pair(func, curses.COLOR_BLUE, curses.COLOR_BLACK)
+
+    @classmethod
+    def white_on_blue(cls) -> curses.color_pair:
+        """Initialized color pair."""
+        func = inspect.getframeinfo(inspect.currentframe()).function
+        return cls._setup_pair(func, curses.COLOR_WHITE, curses.COLOR_BLUE)
+
+    @classmethod
+    def black_on_white(cls) -> curses.color_pair:
+        """Initialized color pair."""
+        func = inspect.getframeinfo(inspect.currentframe()).function
+        return cls._setup_pair(func, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
     @classmethod
     def yellow_on_black(cls) -> curses.color_pair:
-        """Initialized yellow-on-black color pair."""
-        return cls._setup_pair("yellow_black", curses.COLOR_YELLOW, curses.COLOR_BLACK)
+        """Initialized color pair."""
+        func = inspect.getframeinfo(inspect.currentframe()).function
+        return cls._setup_pair(func, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
     @classmethod
     def default(cls) -> curses.color_pair:
-        """Initialized white-on-black color pair."""
-        return cls._setup_pair("default", curses.COLOR_WHITE, curses.COLOR_BLACK)
+        """Initialized color pair."""
+        func = inspect.getframeinfo(inspect.currentframe()).function
+        return cls._setup_pair(func, curses.COLOR_WHITE, curses.COLOR_BLACK)
 
     @classmethod
     def _setup_pair(cls, pair_name, foreground, background):

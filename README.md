@@ -1,6 +1,6 @@
 # powerranger
 
-A ranger-inspired file manager for PowerShell.
+A [ranger](https://github.com/ranger/ranger)-inspired file manager for PowerShell.
 
 ## Installation
 

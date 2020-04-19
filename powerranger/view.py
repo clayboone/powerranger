@@ -2,9 +2,9 @@ import curses
 import logging
 from pathlib import Path
 
-import config
-from files import Directory
-from singleton import Singleton
+from powerranger import config
+from powerranger.files import Directory
+from powerranger.singleton import Singleton
 
 _log = logging.getLogger(__name__)  # pylint: disable=invalid-name
 

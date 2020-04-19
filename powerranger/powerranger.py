@@ -3,7 +3,7 @@ import curses
 import logging
 import sys
 
-from view import View, Cursor
+from powerranger.view import View, Cursor
 
 _log = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -25,8 +25,7 @@ def handle_input():
         _log.info("Exiting peacfully.")
         sys.exit()
 
-
-def main(stdscr):
+def curses_main(stdscr):
     """Program entry point."""
     parser = argparse.ArgumentParser(description="A ranger-inspired file manager for PowerShell.")
     parser.add_argument("-v", "--verbose", action="count", default=0, help="increase output verbosity")
@@ -48,5 +47,10 @@ def main(stdscr):
             break
 
 
+def main():
+    """Console script entry point."""
+    curses.wrapper(curses_main)
+
+
 if __name__ == "__main__":
-    curses.wrapper(main)
+    main()

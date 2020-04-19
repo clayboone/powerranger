@@ -3,8 +3,8 @@ import itertools
 from pathlib import Path
 from typing import Optional, Union
 
-from colors import Colors
-import config
+from powerranger import config
+from powerranger.colors import Colors
 
 
 class Item:

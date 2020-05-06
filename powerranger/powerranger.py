@@ -1,8 +1,11 @@
 import argparse
 import curses
 import logging
+import subprocess
 import sys
 
+import config
+from cursescontext import CursesContext
 from view import View, Cursor
 
 _log = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -28,7 +31,14 @@ def handle_input():
         if View().active_item.is_dir():
             View().active_dir = View().active_item
         else:
-            _log.debug('Opening file "%s', View().active_item)
+            _log.debug("Opening: %s", View().active_item)
+
+            try:
+                subprocess.check_call([config.EDITOR, View().active_item])
+            except FileNotFoundError:
+                _log.error("File not found: %s", config.EDITOR)
+            except subprocess.CalledProcessError:
+                _log.error("Process exited abnormally: %s", config.EDITOR)
 
     if char == ord("q"):
         _log.info("Exiting peacfully.")
@@ -63,7 +73,8 @@ def main():
     To support running as a module, the main function should be able to run
     without arguments. This wrapper initializes curses and calls main.
     """
-    curses.wrapper(curses_main)
+    with CursesContext().curses_screen() as stdscr:
+        curses_main(stdscr)
 
 
 if __name__ == "__main__":

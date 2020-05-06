@@ -1,10 +1,10 @@
 install:
-    pip install --user .
+	pip install --user .
 
 test:
-    pytest tests
+	pytest tests
 
 testfast:
-    pytest -q -x --ff tests
+	pytest -q -x --ff tests
 
-.PHONY: install test
+.PHONY: install test testfast

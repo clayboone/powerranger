@@ -1,3 +1,5 @@
+from cursescontext import CursesContext
 from powerranger import powerranger
 
-powerranger.main()
+with CursesContext().curses_screen() as stdscr:
+    powerranger.main(stdscr)

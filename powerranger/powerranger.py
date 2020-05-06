@@ -45,8 +45,8 @@ def handle_input():
         sys.exit()
 
 
-def curses_main(stdscr):
-    """Program entry point."""
+def main(win):
+    """Initialize View and wait for user input."""
     parser = argparse.ArgumentParser(description="A ranger-inspired file manager for PowerShell.")
     parser.add_argument("-v", "--verbose", action="count", default=0, help="increase output verbosity")
     args = parser.parse_args()
@@ -59,7 +59,7 @@ def curses_main(stdscr):
     curses.curs_set(Cursor.HIDDEN)
 
     while True:
-        View(stdscr).render()
+        View(win).render()
 
         try:
             handle_input()
@@ -67,15 +67,6 @@ def curses_main(stdscr):
             break
 
 
-def main():
-    """Console script entry point.
-
-    To support running as a module, the main function should be able to run
-    without arguments. This wrapper initializes curses and calls main.
-    """
-    with CursesContext().curses_screen() as stdscr:
-        curses_main(stdscr)
-
-
 if __name__ == "__main__":
-    main()
+    with CursesContext().curses_screen() as stdscr:
+        main(stdscr)

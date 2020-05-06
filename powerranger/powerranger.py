@@ -5,7 +5,7 @@ import subprocess
 import sys
 
 import config
-from cursescontext import CursesContext
+import cursescontext
 from view import View, Cursor
 
 _log = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -34,9 +34,12 @@ def handle_input():
             _log.debug("Opening: %s", View().active_item)
 
             try:
-                subprocess.check_call([config.EDITOR, View().active_item])
+                with cursescontext.pause():
+                    subprocess.check_call([config.EDITOR, View().active_item])
+
             except FileNotFoundError:
                 _log.error("File not found: %s", config.EDITOR)
+
             except subprocess.CalledProcessError:
                 _log.error("Process exited abnormally: %s", config.EDITOR)
 
@@ -68,5 +71,5 @@ def main(win):
 
 
 if __name__ == "__main__":
-    with CursesContext().curses_screen() as stdscr:
+    with cursescontext.start() as stdscr:
         main(stdscr)

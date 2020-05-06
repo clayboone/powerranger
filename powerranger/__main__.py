@@ -1,5 +1,5 @@
-from cursescontext import CursesContext
+import cursescontext
 from powerranger import powerranger
 
-with CursesContext().curses_screen() as stdscr:
+with cursescontext.start() as stdscr:
     powerranger.main(stdscr)

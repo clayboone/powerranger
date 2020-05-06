@@ -12,13 +12,13 @@ from colors import Colors
 class Item:
     """An item inside of a Directory."""
     def __init__(self, path: Union[Path, str]):
-        self._path = Path(path)
+        self.path = Path(path)
         self._selected = False
 
     @property
     def name(self) -> str:
         """The name of the item, not including parents."""
-        return self._path.name
+        return self.path.name
 
     @property
     def color(self) -> curses.color_pair:
@@ -28,7 +28,7 @@ class Item:
         if self.selected:
             return Colors.black_on_white()
 
-        if self._path.is_dir():
+        if self.path.is_dir():
             return Colors.blue_on_black()
 
         return Colors.default()
@@ -44,10 +44,13 @@ class Item:
 
     def is_hidden(self) -> bool:
         """Return whether or not the file should be hidden."""
-        return self._has_hidden_attribute() or self._path.name.startswith(".")
+        return self._has_hidden_attribute() or self.path.name.startswith(".")
 
     def _has_hidden_attribute(self) -> bool:
-        return bool(os.stat(self._path.resolve()).st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN)
+        try:
+            return bool(os.stat(self.path.resolve()).st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN)
+        except PermissionError:
+            return True
 
 
 class Directory:

@@ -21,6 +21,15 @@ def handle_input():
     if char == ord("k"):
         View().active_item_index -= 1
 
+    if char == ord("h"):
+        View().active_dir = View().active_dir.parent
+
+    if char == ord("l"):
+        if View().active_item.is_dir():
+            View().active_dir = View().active_item
+        else:
+            _log.debug('Opening file "%s', View().active_item)
+
     if char == ord("q"):
         _log.info("Exiting peacfully.")
         sys.exit()

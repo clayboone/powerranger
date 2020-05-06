@@ -4,6 +4,7 @@ enable=all
 disable=
     missing-module-docstring,
     maybe-no-member,
+    c-extension-no-member,
     locally-disabled,
     suppressed-message,
     too-few-public-methods,

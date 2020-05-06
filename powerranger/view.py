@@ -1,9 +1,12 @@
 import curses
 import logging
 from pathlib import Path
+import re
+from typing import Optional
+import win32api
 
 import config
-from files import Directory
+from files import Directory, Item
 from singleton import SingletonMeta
 
 _log = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -25,11 +28,11 @@ class View(metaclass=SingletonMeta):
     """
     def __init__(self, stdscr=None):
         # Intellisense respects Python's privacy conventions, so we use
-        # curses.newwin as a hack which returns curses._CursesWindow for code
-        # completion.
+        # curses.newwin for code completion.
         self.stdscr: curses.newwin = stdscr
         self.active_dir = Path(config.DEFAULT_STARTUP_DIR).resolve()
         self._active_item_index = 0
+        self.active_item: Optional[Path] = None
         self._max_cursor_index = None
 
     def render(self):
@@ -44,15 +47,21 @@ class View(metaclass=SingletonMeta):
         parent_start = 0
         panes.append(curses.newwin(height, parent_width, header_offset, parent_start))
 
-        # Path.parent will return active_dir if it happens to be the root, so
-        # use parents[0] instead.
-        for index, item in enumerate(Directory(self.active_dir.parents[0])):
+        # Path.parent returns itself if it is the root, so index instead.
+        try:
+            active_dir_parent = Directory(self.active_dir.parents[0])
+        except IndexError:
+            drives = win32api.GetLogicalDriveStrings().split('\x00')[:-1]
+            active_dir_parent = (Item(drive) for drive in drives)
+
+        for index, item in enumerate(active_dir_parent):
             if index >= height - (2 * border_offset):
                 break
 
             item.selected = item.name == self.active_dir.name
 
-            panes[0].addnstr(index + border_offset, border_offset, item.name, parent_width, item.color)
+            item_text = item.name or str(item.path)
+            panes[0].addnstr(index + border_offset, border_offset, item_text, parent_width, item.color)
 
         active_width = int(curses.COLS * config.View.active_pane_width_percent)
         active_start = parent_start + parent_width
@@ -62,7 +71,10 @@ class View(metaclass=SingletonMeta):
             if index >= height - (2 * border_offset):
                 break
 
-            item.selected = index == self.active_item_index
+            if index == self.active_item_index:
+                self.active_item = item.path
+                item.selected = True
+
             self._max_cursor_index = index
 
             panes[1].addnstr(index + border_offset, border_offset, item.name, active_width, item.color)

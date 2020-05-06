@@ -1,7 +1,6 @@
 import curses
 import logging
 from pathlib import Path
-import re
 from typing import Optional
 import win32api
 

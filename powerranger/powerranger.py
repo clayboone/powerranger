@@ -3,7 +3,7 @@ import curses
 import logging
 import sys
 
-from powerranger.view import View, Cursor
+from view import View, Cursor
 
 _log = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -24,6 +24,7 @@ def handle_input():
     if char == ord("q"):
         _log.info("Exiting peacfully.")
         sys.exit()
+
 
 def curses_main(stdscr):
     """Program entry point."""
@@ -48,7 +49,11 @@ def curses_main(stdscr):
 
 
 def main():
-    """Console script entry point."""
+    """Console script entry point.
+
+    To support running as a module, the main function should be able to run
+    without arguments. This wrapper initializes curses and calls main.
+    """
     curses.wrapper(curses_main)
 
 

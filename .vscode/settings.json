@@ -10,6 +10,7 @@
         "**/*.egg-info": true,
         "**/build": true,
         "**/dist": true,
+        "**/__pycache__": true,
     },
 
     "python.linting.enabled": true,

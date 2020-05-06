@@ -1,10 +1,12 @@
 import curses
 import itertools
+import os
 from pathlib import Path
+import stat
 from typing import Optional, Union
 
-from powerranger import config
-from powerranger.colors import Colors
+import config
+from colors import Colors
 
 
 class Item:
@@ -40,6 +42,13 @@ class Item:
     def selected(self, value: bool):
         self._selected = value
 
+    def is_hidden(self) -> bool:
+        """Return whether or not the file should be hidden."""
+        return self._has_hidden_attribute() or self._path.name.startswith(".")
+
+    def _has_hidden_attribute(self) -> bool:
+        return bool(os.stat(self._path.resolve()).st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN)
+
 
 class Directory:
     """A list of items inside of a directory."""
@@ -47,14 +56,19 @@ class Directory:
         self.path = Path(path)
 
     def __iter__(self):
-        items = self.path.iterdir()
+        elements = self.path.iterdir()
 
         if config.SORT_FOLDERS_ON_TOP:
-            items1, items2 = itertools.tee(items)
-            items = itertools.chain(
-                (item for item in items1 if item.is_dir()),
-                (item for item in items2 if not item.is_dir()),
+            element1, element2 = itertools.tee(elements)
+            elements = itertools.chain(
+                (item for item in element1 if item.is_dir()),
+                (item for item in element2 if not item.is_dir()),
             )
 
-        for item in items:
-            yield Item(item)
+        for element in elements:
+            item = Item(element)
+
+            if item.is_hidden() and not config.SHOW_HIDDEN_FILES:
+                continue
+
+            yield Item(element)

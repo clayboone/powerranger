@@ -3,6 +3,8 @@ import os
 
 DEFAULT_STARTUP_DIR = os.curdir
 SORT_FOLDERS_ON_TOP = True
+SHOW_HIDDEN_FILES = False
+
 
 class View:
     """Generic settings for view.View."""

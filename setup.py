@@ -5,11 +5,11 @@ import setuptools
 
 setuptools.setup(
     name="powerranger",
-    version="0.0.1",
+    version="0.0.2",
     url="https://github.com/clayboone/powerranger.git",
     author="Clay Boone",
     author_email="tener.hades@gmail.com",
-    description="lf",
+    description="A ranger-inspired file manager for PowerShell.",
     long_description=Path("README.md").read_text(),
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),

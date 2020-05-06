@@ -2,9 +2,9 @@ import curses
 import logging
 from pathlib import Path
 
-from powerranger import config
-from powerranger.files import Directory
-from powerranger.singleton import Singleton
+import config
+from files import Directory
+from singleton import SingletonMeta
 
 _log = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -16,7 +16,7 @@ class Cursor:
     HIGHLY_VISIBLE = 2
 
 
-class View(metaclass=Singleton):
+class View(metaclass=SingletonMeta):
     """The view from the user's perspective.
 
     View is a singleton which can be called from anywhere with the only

@@ -11,6 +11,26 @@ from singleton import SingletonMeta
 _log = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
+def start_curses():
+    _log.debug("Enabling curses")
+    stdscr = curses.initscr()
+    curses.cbreak()
+    curses.noecho()
+    stdscr.keypad(True)
+
+    if curses.has_colors():
+        curses.start_color()
+
+    View(stdscr).render()
+
+
+def stop_curses():
+    _log.debug("Disabling curses")
+    curses.echo()
+    curses.nocbreak()
+    curses.endwin()
+
+
 class Cursor:
     """Labels for curses' magic values for the cursor setting."""
     HIDDEN = 0
@@ -121,4 +141,3 @@ class View(metaclass=SingletonMeta):
             self._active_item_index = self._max_cursor_index
         else:
             self._active_item_index = value
-

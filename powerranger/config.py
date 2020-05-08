@@ -4,7 +4,8 @@ import os
 DEFAULT_STARTUP_DIR = os.curdir
 SORT_FOLDERS_ON_TOP = True
 SHOW_HIDDEN_FILES = False
-EDITOR = "vim"
+PAUSE_ON_OPENING_FILE = False
+EDITOR = "notepad"
 
 
 class View:

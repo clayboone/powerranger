@@ -22,7 +22,7 @@ class Item:
 
     @property
     def color(self) -> curses.color_pair:
-        """An initialized ncurses color pair associated with the type of file
+        """An initialized curses color pair associated with the type of file
         for this Item.
         """
         if self.selected:

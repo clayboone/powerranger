@@ -2,17 +2,18 @@ import argparse
 import curses
 import logging
 import subprocess
-import sys
 
 import config
-import cursescontext
-from view import View, Cursor
+from view import View, Cursor, start_curses, stop_curses
 
 _log = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-def handle_input():
-    """Wait for user input and handle the returned key."""
+def handle_input() -> str:
+    """Wait for user input and handle the returned key.
+
+    @return Errors.
+    """
     char = View().stdscr.getch()
 
     if char == curses.KEY_RESIZE:
@@ -29,26 +30,46 @@ def handle_input():
 
     if char == ord("l"):
         if View().active_item.is_dir():
-            View().active_dir = View().active_item
+            View().active_dir = View().active_item.resolve()
         else:
-            _log.debug("Opening: %s", View().active_item)
+            if config.PAUSE_ON_OPENING_FILE:
+                stop_curses()
 
-            try:
-                with cursescontext.pause():
-                    subprocess.check_call([config.EDITOR, View().active_item])
-
-            except FileNotFoundError:
-                _log.error("File not found: %s", config.EDITOR)
-
-            except subprocess.CalledProcessError:
-                _log.error("Process exited abnormally: %s", config.EDITOR)
+            call_editor()
+            start_curses()
 
     if char == ord("q"):
         _log.info("Exiting peacfully.")
-        sys.exit()
+        return "ok"
+
+    return None
 
 
-def main(win):
+
+
+
+
+
+
+
+
+
+
+def call_editor():
+    """Call the text editor."""
+    _log.debug('Calling: "%s" with "%s"', config.EDITOR, View().active_item)
+
+    try:
+        subprocess.check_call([config.EDITOR, View().active_item])
+
+    except FileNotFoundError:
+        _log.error("File not found: %s", config.EDITOR)
+
+    except subprocess.CalledProcessError:
+        _log.error("Process exited abnormally: %s", config.EDITOR)
+
+
+def main():
     """Initialize View and wait for user input."""
     parser = argparse.ArgumentParser(description="A ranger-inspired file manager for PowerShell.")
     parser.add_argument("-v", "--verbose", action="count", default=0, help="increase output verbosity")
@@ -59,17 +80,15 @@ def main(win):
     if args.verbose > 0:
         logging.basicConfig(level=logging.INFO)
 
+    start_curses()
     curses.curs_set(Cursor.HIDDEN)
 
     while True:
-        View(win).render()
-
-        try:
-            handle_input()
-        except SystemExit:
+        View().render()
+        if err := handle_input():
+            _log.info("Exit reason: %s", err)
             break
 
 
 if __name__ == "__main__":
-    with cursescontext.start() as stdscr:
-        main(stdscr)
+    main()

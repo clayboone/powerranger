@@ -39,7 +39,7 @@ class Colors:
 
     @classmethod
     def _setup_pair(cls, pair_name, foreground, background):
-        """Lazily configure and remember an ncurses color pair."""
+        """Lazily configure and remember a curses color pair."""
         if cls._pairs.get(pair_name) is None:
             if not cls._pairs:
                 cls._pairs[pair_name] = 1

@@ -119,4 +119,3 @@ class View(metaclass=SingletonMeta):
         else:
             self._active_item_index = value
 
-        self.render()

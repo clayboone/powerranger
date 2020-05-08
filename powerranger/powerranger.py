@@ -45,16 +45,6 @@ def handle_input() -> str:
     return None
 
 
-
-
-
-
-
-
-
-
-
-
 def call_editor():
     """Call the text editor."""
     _log.debug('Calling: "%s" with "%s"', config.EDITOR, View().active_item)
@@ -85,7 +75,10 @@ def main():
 
     while True:
         View().render()
-        if err := handle_input():
+        err = handle_input()
+
+        if err:
+            stop_curses()
             _log.info("Exit reason: %s", err)
             break
 

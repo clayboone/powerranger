@@ -95,7 +95,10 @@ class View(metaclass=SingletonMeta):
 
         @return The combined vertical offset
         """
-        self.stdscr.addnstr(0, 0, str(self.active_dir.absolute()), curses.COLS)
+        foldername = str(self.active_dir.absolute())
+        header_text = foldername + " " * (curses.COLS - len(foldername))
+
+        self.stdscr.addnstr(0, 0, header_text, curses.COLS)
         self.stdscr.hline(1, 0, curses.A_HORIZONTAL, curses.COLS)
         return 2
 

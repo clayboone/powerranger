@@ -10,6 +10,6 @@ EDITOR = "notepad"
 
 class View:
     """Generic settings for view.View."""
-    draw_boxes = True
+    draw_boxes = False
     parent_pane_width_percent = 0.15
     active_pane_width_percent = 0.45

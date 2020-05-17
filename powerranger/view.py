@@ -51,6 +51,7 @@ class View(metaclass=SingletonMeta):
         self.stdscr: curses.newwin = stdscr
         self.active_dir = Path(config.DEFAULT_STARTUP_DIR).resolve()
         self._active_item_index = 0
+        self._active_top_index = 0
         self.active_item: Optional[Path] = None
         self._max_cursor_index = None
 
@@ -58,10 +59,12 @@ class View(metaclass=SingletonMeta):
         """Render the main window view."""
         panes = []
 
+        # Header.
         header_offset = self._draw_header()
         border_offset = int(config.View.draw_boxes)
         height = curses.LINES - header_offset
 
+        # Parent pane.
         parent_width = int(curses.COLS * config.View.parent_pane_width_percent)
         parent_start = 0
         panes.append(curses.newwin(height, parent_width, header_offset, parent_start))
@@ -74,22 +77,22 @@ class View(metaclass=SingletonMeta):
             active_dir_parent = (Item(drive) for drive in drives)
 
         for index, item in enumerate(active_dir_parent):
-            if index >= height - (2 * border_offset):
-                break
-
             item.selected = item.name == self.active_dir.name
 
             item_text = item.name or str(item.path)
             panes[0].addnstr(index + border_offset, border_offset, item_text, parent_width, item.color)
 
+        # Active pane.
         active_width = int(curses.COLS * config.View.active_pane_width_percent)
         active_start = parent_start + parent_width
         panes.append(curses.newwin(height, active_width, header_offset, active_start))
 
-        for index, item in enumerate(Directory(self.active_dir)):
-            if index >= height - (2 * border_offset):
-                break
+        visible_items = list(Directory(self.active_dir))[slice(
+            self._active_top_index,
+            self._active_top_index + (height - 2*border_offset),
+        )]
 
+        for index, item in enumerate(visible_items):
             if index == self.active_item_index:
                 self.active_item = item.path
                 item.selected = True
@@ -98,7 +101,7 @@ class View(metaclass=SingletonMeta):
 
             panes[1].addnstr(index + border_offset, border_offset, item.name, active_width, item.color)
 
-        content_width = curses.COLS - (parent_width + active_width)
+        content_width = curses.COLS - (parent_width+active_width)
         content_start = active_start + active_width
         panes.append(curses.newwin(height, content_width, header_offset, content_start))
 
@@ -111,7 +114,7 @@ class View(metaclass=SingletonMeta):
             pane.refresh()
 
     def _draw_header(self) -> int:
-        """Draw the View's top text and line.
+        """Draw the View's header text and line.
 
         @return The combined vertical offset
         """
